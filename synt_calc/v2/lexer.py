@@ -13,11 +13,11 @@ class NoLexemError(SyntaxError):
 class BaseLexem(ABC):
 
     particle = None
-    lexem = None
+    text = None
     value = None
 
-    def __init__(self, lexem):
-        self.lexem = lexem
+    def __init__(self, text):
+        self.text = text
         self.value = self.coerce()
 
     @staticmethod
@@ -25,7 +25,7 @@ class BaseLexem(ABC):
         for detector, cls in DETECTORS.items():
             match = re.match(detector, particle)
             if match:
-                instance = cls(lexem=match[0])
+                instance = cls(text=match[0])
                 return instance
 
     @abstractmethod
@@ -37,7 +37,7 @@ class BaseLexem(ABC):
 
 class Number(BaseLexem):
     def coerce(self):
-        return Decimal(self.lexem)
+        return Decimal(self.text)
 
 
 DETECTORS = {
@@ -53,10 +53,22 @@ class Lexer:
 
     @property
     def tokens(self):
-        for pos, _ in enumerate(self.text):
-            particle = self.text[pos:]
+        position = 0
+        while True:
+            particle = self.text[position:]
             lexem = BaseLexem.detect(particle)
-            print (lexem)
+            if lexem:
+                print (position, lexem)
+
+                position += len(lexem.text)
+                continue
+
+            # update index
+            position += 1
+            # and leave the loop when done
+            if position >= len(self.text):
+                break
+
 
 query = '-1 + 20 - 3.4'
 

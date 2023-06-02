@@ -1,46 +1,64 @@
-from enum import Enum
-from abs import ABS
+import re
+from abc import ABC, abstractmethod
+from decimal import Decimal
 
-class Lexem(ABS):
+
+class SyntaxError(Exception):
+    pass
+
+class NoLexemError(SyntaxError):
+    pass
+
+
+class BaseLexem(ABC):
+
+    particle = None
+    lexem = None
+    value = None
+
+    def __init__(self, lexem):
+        self.lexem = lexem
+        self.value = self.coerce()
+
+    @staticmethod
+    def detect(particle):
+        for detector, cls in DETECTORS.items():
+            match = re.match(detector, particle)
+            if match:
+                instance = cls(lexem=match[0])
+                return instance
+
     @abstractmethod
-    def is(self, particle):
+    def coerce(self, particle):
         pass
 
+    def __str__(self):
+        return f'Lexem: <{self.value}>'
+
+class Number(BaseLexem):
+    def coerce(self):
+        return Decimal(self.lexem)
 
 
-class Number(Lexem):
-#    type = 
-
-
-class LexemFactory:
-
-    @classmethod
-    def factory(cls, particle):
-        for x in 
-
-
-
+DETECTORS = {
+    r'^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)': Number,
+}
 
 
 
 class Lexer:
 
-    position = None
-
     def __init__(self, text):
         self.text = text
 
     @property
-    def enumerated(self):
-        for idx, char in enumerate(self.text):
-            yield (idx, char)
-
-    @property
     def tokens(self):
-        for x in self.enumerated:
-            print (x)
+        for pos, _ in enumerate(self.text):
+            particle = self.text[pos:]
+            lexem = BaseLexem.detect(particle)
+            print (lexem)
 
-query = '1 + 20 + 34.5 - 5.6 + 2 - 1'
+query = '-1 + 20 - 3.4'
 
 lexer = Lexer(query)
 

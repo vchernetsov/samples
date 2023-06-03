@@ -65,3 +65,9 @@ class Lexer:
                 yield self.detect()
             except StopLexerParser:
                 break
+
+query = ' -1 - 2 + 20 - 5'
+lexer = Lexer(text=query)
+for token in list(lexer.parse()):
+    print (token)
+

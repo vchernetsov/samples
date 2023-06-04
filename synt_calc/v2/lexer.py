@@ -36,10 +36,9 @@ class Lexer:
 
     def __init__(self, text):
         self.text = text
-        self.iterator = iter(self.text)
 
     def _shift(self, offset=1):
-        """Method increases current position of <self.text> iterator by 1"""
+        """Method increases current position by 1"""
         self.position += offset
         if self.position >= len(self.text) + 1:
             self.position = 0

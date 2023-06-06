@@ -1,102 +1,74 @@
+from dataclasses import dataclass
+from enum import Enum, auto
+
+
+class TokenType(Enum):
+    NUMBER = auto()
+    PLUS = auto()
+    MINUS = auto()
+    MULTIPLY = auto()
+    DIVIDE = auto()
+    OPEN_PARENTHESIS = auto()
+    CLOSE_PARENTHESIS = auto()
+    WHITESPACE = auto()
+
+
+@dataclass
 class Token:
-    """Basic token class"""
+    value: any
+    novalue = True
 
-    def __init__(self, value=None):
-        if value is not None:
-            self.value = value
+    def __repr__(self):
+        if self.novalue:
+            return self.token_type.name
 
-
-class Syntax(Token):
-    """Syntax token class"""
-
-
-class OpenBracket(Syntax):
-    """Open Bracket token class"""
-
-    def __str__(self):
-        return f'SYN:OPEN_BRACKET'
+        value = ''
+        if self.value is not None:
+            value = self.value
+        token_type = self.token_type
+        return f'{self.token_type.name}: {value}'
 
 
-class CloseBracket(Syntax):
-    """Close Bracket token class"""
-
-    def __str__(self):
-        return f'SYN:CLOSE_BRACKET'
+class NumberToken(Token):
+    token_type = TokenType.NUMBER
+    novalue = False
 
 
-class Number(Token):
-    """Number token class"""
-
-    def __str__(self):
-        return f'NUMBER:{self.value}'
+class PlusToken(Token):
+    token_type = TokenType.PLUS
 
 
-class Constant(Number):
-    """Constant token class"""
+class MinusToken(Token):
+    token_type = TokenType.MINUS
 
 
-class PI(Constant):
-    """PI token class"""
-
-    def __str__(self):
-        return f'CONST:PI'
+class MultiplyToken(Token):
+    token_type = TokenType.MULTIPLY
 
 
-class EPS(Constant):
-    """Epsilon token class"""
-
-    def __str__(self):
-        return f'CONST:EPS'
+class DivideToken(Token):
+    token_type = TokenType.DIVIDE
 
 
-class Operator(Token):
-    """Operator token class"""
+class OpenParenthesisToken(Token):
+    token_type = TokenType.OPEN_PARENTHESIS
 
 
-class Plus(Operator):
-    """Plus token class"""
-
-    def __str__(self):
-        return f'OP:PLUS'
+class CloseParenthesisToken(Token):
+    token_type = TokenType.CLOSE_PARENTHESIS
 
 
-class Minus(Operator):
-    """Minus token class"""
-
-    def __str__(self):
-        return f'OP:MINUS'
-
-
-class Multiply(Operator):
-    """Multiply token class"""
-
-    def __str__(self):
-        return f'OP:MULTIPLY'
-
-
-class Divide(Operator):
-    """Divide token class"""
-
-    def __str__(self):
-        return f'OP:DIVIDE'
-
-
-class Nop(Token):
-    """Ignored token class"""
-
-    def __str__(self):
-        return f'OP:NO_ACTION'
+class WhitespaceToken(Token):
+    token_type = TokenType.WHITESPACE
 
 
 QUALIFIERS = {
-    r'^([0-9]+([.][0-9]*)?|[.][0-9]+)': Number,
-    r'^PI': PI,
-    r'^EPS': EPS,
-    r'^\+': Plus,
-    r'^\-': Minus,
-    r'^\*': Multiply,
-    r'^\/': Divide,
-    r'^\(': OpenBracket,
-    r'^\)': CloseBracket,
-    r'^\s': Nop,
+    r'^([0-9]+([.][0-9]*)?|[.][0-9]+)': NumberToken,
+    r'^\+': PlusToken,
+    r'^\-': MinusToken,
+    r'^\*': MultiplyToken,
+    r'^\/': DivideToken,
+    r'^\(': OpenParenthesisToken,
+    r'^\)': CloseParenthesisToken,
+    r'^\s': WhitespaceToken,
 }
